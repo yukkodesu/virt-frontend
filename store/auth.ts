@@ -6,13 +6,24 @@ interface UserPayloudInterface {
 }
 
 export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    isLogin: false,
-    loading: false,
-  }),
+  state: () => {
+    return {
+      isLogin: false,
+      loading: false,
+      user: {
+        username: "",
+      },
+    };
+  },
   actions: {
+    initUserInfo() {
+      const user = useCookie("user");
+      if (!user.value) return;
+      this.user.username = user.value.username;
+    },
     async authenticateUser({ username, password }: UserPayloudInterface) {
-      const { data, pending } = await useFetch("/api/login", {
+      const { data, pending, error } = await useFetch("/api/login", {
+        timeout: 3000,
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -23,12 +34,13 @@ export const useAuthStore = defineStore("auth", {
         },
       });
       this.loading = pending.value;
-      if (data.value) {
-        const token = useCookie("authorization");
-        token.value = `${data.value}`;
-        console.log(`auth token ${data.value}`);
-        this.isLogin = true;
-      }
+      if (!data.value) throw error.value;
+      const token = useCookie("authorization");
+      token.value = `${data.value}`;
+      const user = useCookie("user");
+      user.value = JSON.stringify({ username });
+      this.isLogin = true;
+      this.user.username = username;
     },
     logOut() {
       const token = useCookie("authorization");

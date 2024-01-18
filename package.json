@@ -13,11 +13,11 @@
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.10.1",
     "nuxt": "^3.8.1",
-    "nuxt-security": "^1.0.0",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "@nuxt/ui": "^2.12.0",
     "@pinia/nuxt": "^0.5.1",
     "pinia": "^2.1.7"
   }

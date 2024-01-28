@@ -1,13 +1,16 @@
 <template>
     <div class="flex flex-col py-8 px-4">
-        <div v-for="i in asideList">
-            <IndexAsideBarTitle :title="i.title" :open="true" @click="onClick" />
-            <IndexAsideBarItem :items="i.children" />
+        <div v-for="(i, idx) in asideList">
+            <IndexAsideBarTitle :title="i.title" :open="true" @click="onClick(idx)" />
+            <Transition>
+                <IndexAsideBarItem :items="i.children" v-show="isOpen[idx]" />
+            </Transition>
         </div>
     </div>
 </template>
 
 <script setup>
+const isOpen = ref([true, true]);
 const asideList = [
     {
         title: "Host Infomation",
@@ -35,5 +38,24 @@ const asideList = [
             },
         ]
     }
-]
+];
+
+const onClick = (idx) => {
+    const arr = isOpen.value;
+    arr[idx] = !arr[idx];
+};
+
 </script>
+
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+    transition: height 3s ease-in;
+    overflow: hidden;
+}
+
+.v-enter-from,
+.v-leave-to {
+    height: 0;
+}
+</style>

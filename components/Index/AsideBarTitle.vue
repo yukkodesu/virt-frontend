@@ -24,7 +24,7 @@ const onClick = () => {
     emit('click');
 };
 const iconTrans = computed(() => {
-    return isOpen.value ? "" : "rotate-90";
+    return isOpen.value ? "rotate-90" : "";
 })
 
 </script>

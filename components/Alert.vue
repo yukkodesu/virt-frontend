@@ -1,6 +1,6 @@
 <template>
     <Transition>
-        <div v-if="show" class="w-[400px] absolute left-1/2 top-0 transform -translate-x-1/2 translate-y-1/2 z-10">
+        <div v-if="show" class="w-[400px] absolute left-1/2 top-12 transform -translate-x-1/2 translate-y-1/2 z-10">
             <UAlert :title="alertMsg" color="red" :icon="icon" @close="close"
                 :close-button="{ icon: 'i-heroicons-x-mark-20-solid', color: 'white', variant: 'link', padded: false }" />
         </div>

@@ -10,8 +10,7 @@
 </template>
 
 <script setup>
-const isOpen = ref([true, true]);
-const asideList = [
+const asideList = ref([
     {
         title: "Host Infomation",
         children: [
@@ -38,7 +37,8 @@ const asideList = [
             },
         ]
     }
-];
+]);
+const isOpen = ref(Array(asideList.value.length).fill(true));
 
 const onClick = (idx) => {
     const arr = isOpen.value;

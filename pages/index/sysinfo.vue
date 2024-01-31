@@ -72,9 +72,15 @@ const fetchData = async () => {
     }
 }
 
-const timer = setInterval(() => {
-    fetchData();
-}, 2000);
+fetchData();
+
+let timer = null;
+
+onMounted(() => {
+    timer = setInterval(() => {
+        fetchData();
+    }, 2000);
+})
 
 onBeforeUnmount(() => {
     clearInterval(timer);

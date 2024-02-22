@@ -40,29 +40,13 @@ const fetchData = async () => {
             }
         }
         const usage = JSON.parse(sysinfo['cpu usage']);
-        Object.entries(usage).forEach(([k, v]) => {
-            if (seriesVal[k].data.length >= 20) {
-                seriesVal[k].data.shift();
+        Object.entries(usage).forEach(([k, v]: [string, any]) => {
+            const i = Number(k);
+            if (seriesVal[i].data.length > 15) {
+                seriesVal[i].data.shift();
             }
-            seriesVal[k].data.push({ x: timestamp, y: v });
+            seriesVal[i].data.push({ x: timestamp, y: v });
         })
-        if (seriesVal[0].data.length >= 20) {
-            chartOptions.value = {
-                xaxis: {
-                    type: 'datetime',
-                    min: seriesVal[0].data[0].x,
-                    max: seriesVal[0].data[seriesVal[0].data.length - 1].x
-                }
-            };
-        } else {
-            chartOptions.value = {
-                xaxis: {
-                    type: 'datetime',
-                    min: seriesVal[0].data[0].x,
-                    max: dayjs(seriesVal[0].data[0].x).add(40, 'seconds').unix() * 1000,
-                }
-            };
-        }
     }
     catch (e) {
         if (e instanceof Error) {
@@ -74,7 +58,7 @@ const fetchData = async () => {
 
 fetchData();
 
-let timer = null;
+let timer: any = null;
 
 onMounted(() => {
     timer = setInterval(() => {
@@ -90,13 +74,7 @@ const chartOptions = ref({
         type: 'area',
         height: 350,
         stacked: true,
-        events: {
-            selection: function (chart, e) {
-                console.log(new Date(e.xaxis.min))
-            }
-        },
     },
-    colors: ['#008FFB', '#00E396', '#CED4DC'],
     dataLabels: {
         enabled: false
     },
@@ -116,8 +94,6 @@ const chartOptions = ref({
     },
     xaxis: {
         type: 'datetime',
-        min: 0,
-        max: 0,
     },
     yaxis: {
         max: 600.0,

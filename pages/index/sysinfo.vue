@@ -1,7 +1,9 @@
 <template>
     <div id="chart" class="py-8 px-4">
         <ClientOnly>
-            <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="line" height="350" :options="chartOptions" :series="series"
+                @updated="onChartUpdated">
+            </apexchart>
         </ClientOnly>
     </div>
     <Teleport to="body">
@@ -12,8 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from 'dayjs';
-import clone from 'lodash-es/cloneDeep';
 const alertOpt = ref({
     msg: "",
     show: false,
@@ -42,11 +42,8 @@ const fetchData = async () => {
         const usage = JSON.parse(sysinfo['cpu usage']);
         Object.entries(usage).forEach(([k, v]: [string, any]) => {
             const i = Number(k);
-            if (seriesVal[i].data.length > 15) {
-                seriesVal[i].data.shift();
-            }
             seriesVal[i].data.push({ x: timestamp, y: v });
-        })
+        });
     }
     catch (e) {
         if (e instanceof Error) {
@@ -69,24 +66,33 @@ onMounted(() => {
 onBeforeUnmount(() => {
     clearInterval(timer);
 })
+
+const onChartUpdated = () => {
+    const seriesVal = series.value;
+    if (seriesVal[0].data.length <= 15) return;
+    seriesVal.forEach(it => it.data.shift());
+}
+
 const chartOptions = ref({
     chart: {
-        type: 'area',
+        type: 'line',
         height: 350,
         stacked: true,
+        zoom: {
+            enabled: false,
+        },
+        toolbar: {
+            show: false,
+        },
+        animations: {
+            enabled: false,
+        },
     },
     dataLabels: {
         enabled: false
     },
     stroke: {
         curve: 'smooth'
-    },
-    fill: {
-        type: 'gradient',
-        gradient: {
-            opacityFrom: 0.6,
-            opacityTo: 0.8,
-        }
     },
     legend: {
         position: 'top',

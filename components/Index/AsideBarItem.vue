@@ -17,7 +17,7 @@
 <script setup lang="ts">
 const route = useRoute();
 const isActive = (path: string, navTo: string) => {
-    return path === `/${navTo}`;
+    return path === `${navTo}`;
 }
 const props = defineProps<{
     items: Array<{

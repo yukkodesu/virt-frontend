@@ -16,11 +16,11 @@ const asideList = ref([
         children: [
             {
                 title: "System Utilization",
-                navTo: "sysinfo",
+                navTo: "/sysinfo",
             },
             {
                 title: "User Profile",
-                navTo: "userprofile",
+                navTo: "/userprofile",
             },
         ]
     },
@@ -29,11 +29,11 @@ const asideList = ref([
         children: [
             {
                 title: "debian",
-                navTo: "vm/debian",
+                navTo: "/vm/debian",
             },
             {
                 title: "win10",
-                navTo: "vm/win10",
+                navTo: "/vm/win10",
             },
         ]
     },
@@ -42,11 +42,11 @@ const asideList = ref([
         children: [
             {
                 title: "Snapshot List",
-                navTo: "snapshot/list",
+                navTo: "/snapshot/list",
             },
             {
                 title: "GraphView Manager",
-                navTo: "snapshot/graphview",
+                navTo: "/snapshot/graphview",
             },
         ]
     }

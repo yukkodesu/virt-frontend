@@ -18,24 +18,26 @@ const sysinfo = ref({
     "total swap": "",
 });
 
-const { data, error: fetchError, refresh } = await useFetch('/api/sysinfo');
+const { data, error: fetchError, refresh } = await useFetch('/api/sysinfo', { timeout: 5000 });
 
 const updateSysInfo = () => {
+    if (fetchError.value) {
+        showAlert && showAlert(fetchError.value?.message);
+        return;
+    }
     Object.entries(data.value).forEach(([k, v]: [string, any]) => {
         (sysinfo.value)[k] = `${v}`;
     })
 }
 
-if (fetchError.value) {
-    showAlert && showAlert(fetchError.value?.message);
-} else {
-    updateSysInfo();
-}
+updateSysInfo();
+
 
 let timer: any = null;
 onMounted(() => {
     timer = setInterval(() => {
         refresh();
+        console.log(fetchError.value);
         updateSysInfo();
     }, 2000);
 })

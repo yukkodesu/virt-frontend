@@ -1,10 +1,12 @@
 <template>
     <NuxtLayout>
         <template #aside>
-            <IndexAsideBar/>
+            <IndexAsideBar />
         </template>
         <template #default>
-            <NuxtPage />
+            <AlertProvider>
+                <NuxtPage />
+            </AlertProvider>
         </template>
     </NuxtLayout>
 </template>

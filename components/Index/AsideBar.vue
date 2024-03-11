@@ -36,6 +36,19 @@ const asideList = ref([
                 navTo: "vm/win10",
             },
         ]
+    },
+    {
+        title: "SnapShots",
+        children: [
+            {
+                title: "Snapshot List",
+                navTo: "snapshot/list",
+            },
+            {
+                title: "GraphView Manager",
+                navTo: "snapshot/graphview",
+            },
+        ]
     }
 ]);
 const isOpen = ref(Array(asideList.value.length).fill(true));

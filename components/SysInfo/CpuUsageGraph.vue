@@ -78,7 +78,7 @@ const chartOptions = ref({
         type: 'datetime',
     },
     yaxis: {
-        max: 600.0,
+        max: 100.0,
         min: 0.0,
         labels: {
             formatter: (val: number) => `${val.toFixed(0)}%`

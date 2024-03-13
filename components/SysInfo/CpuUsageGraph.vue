@@ -1,10 +1,8 @@
 <template>
-    <div id="chart" class="py-8 px-4">
-        <ClientOnly>
-            <apexchart type="line" height="350" :options="chartOptions" :series="series">
-            </apexchart>
-        </ClientOnly>
-    </div>
+    <ClientOnly>
+        <apexchart type="line" height="350" :options="chartOptions" :series="series">
+        </apexchart>
+    </ClientOnly>
 </template>
 
 <script setup lang="ts">

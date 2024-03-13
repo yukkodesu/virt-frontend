@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
 const authStore = useAuthStore();
-const { user, initUserInfo } = authStore;
-onMounted(()=>{
+const { user, initUserInfo, logOut } = authStore;
+onMounted(() => {
     initUserInfo();
 })
 const items = [
@@ -33,7 +33,8 @@ const items = [
             label: 'Log Out',
             icon: 'i-heroicons-power',
             click: () => {
-                console.log('Edit')
+                logOut();
+                navigateTo("/login");
             }
         }
     ]

@@ -1,5 +1,13 @@
 <template>
     <div>
+        <div class="flex">
+            <UCard>
+                <SysInfoRamUsageGraph :sysinfo="sysinfo" />
+            </UCard>
+            <UCard>
+                <SysInfoSwapUsageGraph :sysinfo="sysinfo" />
+            </UCard>
+        </div>
         <UCard>
             <SysInfoCpuUsageGraph :sysinfo="sysinfo" />
         </UCard>
@@ -37,7 +45,6 @@ let timer: any = null;
 onMounted(() => {
     timer = setInterval(() => {
         refresh();
-        console.log(fetchError.value);
         updateSysInfo();
     }, 2000);
 })

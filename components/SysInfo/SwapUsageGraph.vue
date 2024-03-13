@@ -21,7 +21,7 @@ const props = defineProps<{
     sysinfo: SysInfo
 }>();
 
-const getMemUsagePercentage = (sysinfo: SysInfo) => (Number(sysinfo["used memory"]) * 100 / Number(sysinfo["total memory"])).toFixed(2);
+const getMemUsagePercentage = (sysinfo: SysInfo) => (Number(sysinfo["used swap"]) * 100 / Number(sysinfo["total swap"])).toFixed(2);
 
 const series = ref([getMemUsagePercentage(props.sysinfo)]);
 
@@ -40,6 +40,6 @@ const chartOptions = ref({
             }
         },
     },
-    labels: ['Mem'],
+    labels: ['Swap'],
 });
 </script>

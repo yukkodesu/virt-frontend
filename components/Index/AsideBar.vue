@@ -10,6 +10,9 @@
 </template>
 
 <script setup>
+import { useVirtStore } from '~/store/virt';
+const virtStore = useVirtStore();
+const { domains, updateDomains } = virtStore;
 const asideList = ref([
     {
         title: "Host Infomation",
@@ -26,16 +29,7 @@ const asideList = ref([
     },
     {
         title: "Virtual Machine",
-        children: [
-            {
-                title: "debian",
-                navTo: "/vm/debian",
-            },
-            {
-                title: "win10",
-                navTo: "/vm/win10",
-            },
-        ]
+        children: []
     },
     {
         title: "SnapShots",
@@ -51,6 +45,15 @@ const asideList = ref([
         ]
     }
 ]);
+
+await callOnce(updateDomains);
+domains.forEach(it => {
+    asideList.value[1].children.push({
+        title: it['name'],
+        navTo: `/vm/${it['name']}`,
+    })
+})
+
 const isOpen = ref(Array(asideList.value.length).fill(true));
 
 const onClick = (idx) => {

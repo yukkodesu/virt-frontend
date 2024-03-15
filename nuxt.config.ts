@@ -8,6 +8,9 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  pinia: {
+    storesDirs: ['./store/**'],
+  },
   routeRules: {
     "/api/**": {
       proxy: { to: "http://localhost:8000/api/**" },

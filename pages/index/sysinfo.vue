@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div class="flex">
+    <div class="py-2">
+        <div class="flex gap-2 pb-2">
             <UCard>
                 <SysInfoRamUsageGraph :sysinfo="sysinfo" />
             </UCard>

@@ -13,10 +13,9 @@
                             padding: 'sm:p-0'
                         }
                     }">
-            <UTable :rows="tableData" />
+            <UTable :rows="tableData" :columns="col" />
         </UCard>
     </div>
-    {{ snapshotData }}
 </template>
 
 <script setup lang="ts">
@@ -27,17 +26,46 @@ await callOnce(updateDomains);
 const options = ref([]);
 const selected = ref("Loading");
 domains.map(it => options.value.push(it['name']));
-selected.value = (options.value)[1];
+selected.value = (options.value)[0];
 
-const { data: snapshotData, refresh } = useFetch("/api/list-snapshot", {
+const { data: snapshotData, refresh: refreshSnapshotData } = useAsyncData("snapshots", () => $fetch('/api/list-snapshot', {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
     },
-    body: JSON.stringify([selected.value]),
-});
+    body: [selected.value],
+}));
+
+const col = [
+    {
+        key: "name",
+        label: "Name",
+    },
+    {
+        key: "creationTime",
+        label: "Creation Time",
+    },
+    {
+        key: "state",
+        label: "State"
+    },
+    {
+        key: "description",
+        label: "Description",
+    },
+    {
+        key: "actions"
+    }
+]
+
+refreshSnapshotData()
+
+watch(selected, () => {
+    refreshSnapshotData();
+})
 
 const tableData = computed(() => {
+    if(!snapshotData.value) return [];
     return (snapshotData.value)[selected.value];
 })
 

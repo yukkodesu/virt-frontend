@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import dayjs from "dayjs";
 
 interface UserPayloudInterface {
   username: string;
@@ -19,7 +20,7 @@ export const useAuthStore = defineStore("auth", {
     initUserInfo() {
       const user = useCookie("user");
       if (!user.value) return;
-      this.user.username = user.value.username;
+      this.user.username = user.value;
     },
     async authenticateUser({ username, password }: UserPayloudInterface) {
       const { data, pending, error } = await useFetch("/api/login", {
@@ -34,11 +35,6 @@ export const useAuthStore = defineStore("auth", {
         },
       });
       this.loading = pending.value;
-      if (!data.value) throw error.value;
-      const token = useCookie("authorization");
-      token.value = `${data.value}`;
-      const user = useCookie("user");
-      user.value = JSON.stringify({ username });
       this.isLogin = true;
       this.user.username = username;
     },
@@ -46,6 +42,8 @@ export const useAuthStore = defineStore("auth", {
       const token = useCookie("authorization");
       this.isLogin = false;
       token.value = null;
+      const user = useCookie("user");
+      user.value = null;
     },
   },
 });

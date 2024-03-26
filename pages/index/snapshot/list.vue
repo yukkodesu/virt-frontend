@@ -33,8 +33,9 @@
             </UTable>
         </UCard>
     </div>
-    <SnapshotEditor v-model:is-open="isOpenEditModel" v-model:snapshot-info="modelSnapshotInfo"
-        @submit="refreshSnapshotData" />
+    <SnapshotEditor v-model:is-open="isEditorOpen" v-model:snapshot-info="modelSnapshotInfo"
+        :onConfirm="onEditorComfirm" />
+    <SnapshotAlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :onConfirm="onAlertComfirm" />
 </template>
 
 <script setup lang="ts">
@@ -84,11 +85,20 @@ const col = [
     }
 ];
 
-const isOpenEditModel = ref(false);
+const isEditorOpen = ref(false);
 const modelSnapshotInfo = ref<{ name: string, description: string }>({
     name: "",
     description: "",
 });
+const onEditorComfirm = ref<(() => Promise<void>) | null>(null);
+
+const isAlertOpen = ref(false);
+const alertMsg = ref("");
+const onAlertComfirm = ref<(() => Promise<void>) | null>(null);
+const openAlert = (msg: string) => {
+    alertMsg.value = msg;
+    isAlertOpen.value = true;
+};
 
 const items = (row) => [
     [
@@ -96,30 +106,47 @@ const items = (row) => [
             label: 'Edit',
             icon: 'i-heroicons-pencil-square-20-solid',
             click: () => {
-                isOpenEditModel.value = true;
+                isEditorOpen.value = true;
                 modelSnapshotInfo.value = {
                     name: row['name'],
                     description: row['description'] === "None" ? "" : row['description']
+                }
+                onEditorComfirm.value = async () => {
+                    isAlertOpen.value = false;
+                    isTableLoading.value = true;
+                    await $fetch('/api/snapshot-edit', {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: modelSnapshotInfo.value,
+                    });
+                    await refreshSnapshotData();
+                    isTableLoading.value = false;
                 }
             },
         },
         {
             label: 'Set Current',
             icon: 'i-heroicons-check-circle-20-solid',
-            click: async () => {
-                isTableLoading.value = true;
-                await $fetch('/api/set-current-snapshot', {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    method: "POST",
-                    body: {
-                        dom_name: selected.value,
-                        snapshot_name: row['name'],
-                    },
-                });
-                await refreshSnapshotData();
-                isTableLoading.value = false;
+            click: () => {
+                openAlert("Revert to another snapshot will discard all your changes in VM now, Do you still continue ?");
+                onAlertComfirm.value = async () => {
+                    isAlertOpen.value = false;
+                    isTableLoading.value = true;
+                    await $fetch('/api/set-current-snapshot', {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: {
+                            dom_name: selected.value,
+                            snapshot_name: row['name'],
+                        },
+                    });
+                    await refreshSnapshotData();
+                    isTableLoading.value = false;
+                };
             },
         },
         {

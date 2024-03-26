@@ -1,14 +1,16 @@
 <script setup lang="ts">
 const isOpen = defineModel<boolean>('isOpen');
-const snapshotInfo = defineModel<{
-    name: string,
-    description: string,
-}>('snapshotInfo');
-const emit = defineEmits(['submit']);
+const props = defineProps<{
+    snapshotInfo: {
+        name: string,
+        description: string,
+    },
+    onConfirm: (() => Promise<void>) | null,
+}>();
 
 const submitSnapshotEdit = async () => {
-    emit('submit');
     isOpen.value = false;
+    props.onConfirm && props.onConfirm();
 }
 </script>
 
@@ -27,9 +29,15 @@ const submitSnapshotEdit = async () => {
                         <UFormGroup label="Description" name="description">
                             <UInput v-model="snapshotInfo.description" />
                         </UFormGroup>
-                        <UButton type="submit">
-                            Submit
-                        </UButton>
+                        <div class="flex justify-end">
+                            <UButton type="submit">
+                                Submit
+                            </UButton>
+                            <UButton variant="outline" class="ml-2" @click="() => isOpen = false">
+                                Cancel
+                            </UButton>
+
+                        </div>
                     </UForm>
                 </template>
             </UCard>

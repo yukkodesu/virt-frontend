@@ -157,11 +157,11 @@ const items = (row) => [
             label: 'Clone',
             icon: 'i-heroicons-document-duplicate-20-solid',
             click: () => {
-                openAlert("Revert to another snapshot will discard all your changes in VM now, Do you still continue ?");
+                openAlert("Clone this snapshot into new VM, Do you still continue ?");
                 onAlertComfirm.value = async () => {
                     isAlertOpen.value = false;
                     isTableLoading.value = true;
-                    await $fetch('/api/set-current-snapshot', {
+                    await $fetch('/api/clone-snapshot-as-vm', {
                         headers: {
                             "Content-Type": "application/json",
                         },
@@ -178,7 +178,26 @@ const items = (row) => [
         },
         {
             label: 'Delete',
-            icon: 'i-heroicons-trash-20-solid'
+            icon: 'i-heroicons-trash-20-solid',
+            click: () => {
+                openAlert("Delete snapshot will lose data on this snapshot. Do you still continue ?");
+                onAlertComfirm.value = async () => {
+                    isAlertOpen.value = false;
+                    isTableLoading.value = true;
+                    await $fetch('/api/delete-snapshot', {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: {
+                            dom_name: selected.value,
+                            snapshot_name: row['name'],
+                        },
+                    });
+                    await refreshSnapshotData();
+                    isTableLoading.value = false;
+                };
+            },
         }
     ]
 ]

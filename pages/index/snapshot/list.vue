@@ -103,7 +103,7 @@ const openAlert = (msg: string) => {
 const items = (row) => [
     [
         {
-            label: 'Edit',
+            label: 'Edit Description',
             icon: 'i-heroicons-pencil-square-20-solid',
             click: () => {
                 isEditorOpen.value = true;
@@ -114,12 +114,16 @@ const items = (row) => [
                 onEditorComfirm.value = async () => {
                     isAlertOpen.value = false;
                     isTableLoading.value = true;
-                    await $fetch('/api/snapshot-edit', {
+                    await $fetch('/api/edit-snapshot', {
                         headers: {
                             "Content-Type": "application/json",
                         },
                         method: "POST",
-                        body: modelSnapshotInfo.value,
+                        body: {
+                            dom_name: selected.value,
+                            snapshot_name: row['name'],
+                            description: modelSnapshotInfo.value.description,
+                        },
                     });
                     await refreshSnapshotData();
                     isTableLoading.value = false;
@@ -151,7 +155,26 @@ const items = (row) => [
         },
         {
             label: 'Clone',
-            icon: 'i-heroicons-document-duplicate-20-solid'
+            icon: 'i-heroicons-document-duplicate-20-solid',
+            click: () => {
+                openAlert("Revert to another snapshot will discard all your changes in VM now, Do you still continue ?");
+                onAlertComfirm.value = async () => {
+                    isAlertOpen.value = false;
+                    isTableLoading.value = true;
+                    await $fetch('/api/set-current-snapshot', {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: {
+                            dom_name: selected.value,
+                            snapshot_name: row['name'],
+                        },
+                    });
+                    await refreshSnapshotData();
+                    isTableLoading.value = false;
+                };
+            },
         },
         {
             label: 'Delete',

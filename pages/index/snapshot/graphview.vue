@@ -81,22 +81,24 @@ const generatePositions = function (edges: Ref<{ [idx: string]: string[] }>, max
   return positions;
 }
 
-
-refreshSnapshotTree().then(() => {
-
-});
-
-watch(selected, async () => {
-  await refreshSnapshotTree();
+const updateRender = () => {
+  elements.value.splice(0);
   const pos = generatePositions(snapshotTree, 300, 100);
-  console.log(pos);
   for (let edge in snapshotTree.value) {
-    elements.value.push({ id: edge, label: edge, position: { x: pos[edge].x + 200, y: pos[edge].y } });
+    elements.value.push({ id: edge, label: edge, position: { x: pos[edge].x + 200, y: pos[edge].y }, class: "active" });
     (snapshotTree.value)[edge].forEach(it => {
       elements.value.push({ id: `e${edge}-${it}`, source: `${edge}`, target: `${it}` });
     })
   }
-  console.log(elements.value);
+}
+
+refreshSnapshotTree().then(() => {
+  updateRender();
+});
+
+watch(selected, async () => {
+  await refreshSnapshotTree();
+  updateRender();
 })
 
 </script>
@@ -124,4 +126,5 @@ watch(selected, async () => {
 
 /* import the default theme, this is optional but generally recommended */
 @import '@vue-flow/core/dist/theme-default.css';
+
 </style>

@@ -23,8 +23,8 @@ export const useAuthStore = defineStore("auth", {
       this.user.username = user.value;
     },
     async authenticateUser({ username, password }: UserPayloudInterface) {
-      const { data, pending, error } = await useFetch("/api/login", {
-        timeout: 3000,
+      this.loading = true;
+      await $fetch("/api/login", {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore("auth", {
           password,
         },
       });
-      this.loading = pending.value;
+      this.loading = false;
       this.isLogin = true;
       this.user.username = username;
     },

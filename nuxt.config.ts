@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     },
   },
   pinia: {
-    storesDirs: ['./store/**'],
+    storesDirs: ["./store/**"],
   },
   routeRules: {
     "/api/**": {

@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 const series = ref<Array<{
     name: string,
-    data: Array<Array<{ x: number, y: number }>>
+    data: { x: number, y: number }[]
 }>>([]);
 
 for (let i = 0; i < Number(props.sysinfo['cpu number']); i++) {
@@ -44,7 +44,7 @@ const updateGraph = (sysinfo: SysInfo) => {
 
 updateGraph(props.sysinfo);
 
-watch(props.sysinfo, (sysinfo) => {
+watch(() => props.sysinfo, (sysinfo) => {
     updateGraph(sysinfo);
 })
 const chartOptions = ref({

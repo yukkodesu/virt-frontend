@@ -25,7 +25,7 @@ const getMemUsagePercentage = (sysinfo: SysInfo) => (Number(sysinfo["used memory
 
 const series = ref([getMemUsagePercentage(props.sysinfo)]);
 
-watch(props.sysinfo, (sysinfo) => {
+watch(() => props.sysinfo, (sysinfo) => {
     series.value.shift();
     series.value.push(getMemUsagePercentage(sysinfo));
 })

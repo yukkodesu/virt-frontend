@@ -13,10 +13,10 @@
             </div>
         </div>
         <UCard :ui="{
-                        body: {
-                            padding: 'sm:p-0'
-                        }
-                    }">
+            body: {
+                padding: 'sm:p-0'
+            }
+        }">
             <UTable :rows="tableData" :columns="col" :loading="isTableLoading"
                 :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
                 :progress="{ color: 'primary', animation: 'carousel' }">
@@ -54,7 +54,15 @@ const isTableLoading = ref(true);
 domains.map(it => options.value.push(it['name']));
 selected.value = (options.value)[0];
 
-const { data: snapshotData, refresh: refreshSnapshotData } = useAsyncData("snapshots", () => $fetch('/api/list-snapshot', {
+const { data: snapshotData, refresh: refreshSnapshotData } = useAsyncData<{
+    [idx: string]: {
+        isCurrent: string,
+        state: string,
+        creationTime: string,
+        name: string,
+        description: string,
+    }[]
+}>("snapshotData", () => $fetch('/api/list-snapshot', {
     method: "POST",
     headers: {
         "Content-Type": "application/json",

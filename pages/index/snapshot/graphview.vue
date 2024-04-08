@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { Elements } from '@vue-flow/core'
 import { VueFlow } from '@vue-flow/core'
+import { useMouse, useWindowScroll, useElementSize } from '@vueuse/core';
 
 const el = ref(null);
+
+const { width } = useElementSize(el);
 
 const virtStore = useVirtStore();
 const { domains, updateDomains } = virtStore;
@@ -13,7 +16,9 @@ const selected = ref("Loading");
 domains.map(it => options.value.push(it['name']));
 selected.value = (options.value)[0];
 
-const { data: snapshotTree, refresh: refreshSnapshotTree } = useAsyncData("snapshots", () => $fetch('/api/list-snapshot-tree', {
+const { data: snapshotTree, refresh: refreshSnapshotTree } = useAsyncData<{
+  [idx: string]: string[]
+}>("snapshotTree", () => $fetch('/api/list-snapshot-tree', {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -21,10 +26,27 @@ const { data: snapshotTree, refresh: refreshSnapshotTree } = useAsyncData("snaps
   body: JSON.stringify(selected.value),
 }));
 
+const { data: snapshotData, refresh: refreshSnapshotData } = useAsyncData<{
+  [idx: string]: {
+    isCurrent: string,
+    state: string,
+    creationTime: string,
+    name: string,
+    description: string,
+  }[]
+}>("snapshotData", () => $fetch('/api/list-snapshot', {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: [selected.value],
+}));
+
 const elements = ref<Elements>([]);
 
-const generatePositions = function (edges: Ref<{ [idx: string]: string[] }>, maxWidth: number, stepHeight: number): { [idx: string]: { x: number, y: number } } {
+const generatePositions = function (edges: Ref<{ [idx: string]: string[] } | null>, maxWidth: number, stepHeight: number): { [idx: string]: { x: number, y: number } } | null {
   const obj = edges.value;
+  if (!obj) return null;
   const positions: { [idx: string]: { x: number, y: number } } = {};
   const S = [];
   const queue: Array<{
@@ -81,25 +103,87 @@ const generatePositions = function (edges: Ref<{ [idx: string]: string[] }>, max
   return positions;
 }
 
-const updateRender = () => {
+const updateRender = async () => {
   elements.value.splice(0);
-  const pos = generatePositions(snapshotTree, 300, 100);
+  if (!snapshotData.value || !snapshotTree.value) return;
+  if ((snapshotData.value)[selected.value]) {
+    const [curSnapshot] = (snapshotData.value)[selected.value].filter(it => it.isCurrent === 'true');
+    if (curSnapshot) {
+      (snapshotTree.value)[curSnapshot.name].push("Current");
+      (snapshotTree.value)["Current"] = [];
+    }
+  }
+  const pos = generatePositions(snapshotTree, 250, 100);
+  if (!pos) return;
   for (let edge in snapshotTree.value) {
-    elements.value.push({ id: edge, label: edge, position: { x: pos[edge].x + 200, y: pos[edge].y }, class: "active" });
+    elements.value.push({
+      id: edge,
+      label: edge,
+      position: { x: pos[edge].x + (width.value / 3), y: pos[edge].y },
+      class: "snapshot-node",
+      style: edge === "Current" ? {
+        "color": "rgb(var(--color-primary-DEFAULT))",
+        "border-color": "rgb(var(--color-primary-DEFAULT))",
+      } : {},
+    });
     (snapshotTree.value)[edge].forEach(it => {
       elements.value.push({ id: `e${edge}-${it}`, source: `${edge}`, target: `${it}` });
-    })
+    });
   }
 }
 
-refreshSnapshotTree().then(() => {
+Promise.all([refreshSnapshotData(), refreshSnapshotTree()]).then(() => {
   updateRender();
 });
 
 watch(selected, async () => {
-  await refreshSnapshotTree();
+  await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
   updateRender();
 })
+
+
+
+//Context Menu Code Below
+
+const rightClickSelect = ref("None");
+const { x, y } = useMouse();
+const { y: windowY } = useWindowScroll();
+
+const isOpen = ref(false)
+const virtualElement = ref({ getBoundingClientRect() { } });
+
+function onContextMenu(e: MouseEvent) {
+  if (e.target instanceof Element) {
+    const el: HTMLElement | null = e.target.closest(".snapshot-node");
+    if(!el) return;
+    rightClickSelect.value = `${el.dataset.id}`;
+  }
+  const top = unref(y) - unref(windowY)
+  const left = unref(x)
+
+  virtualElement.value.getBoundingClientRect = () => ({
+    width: 0,
+    height: 0,
+    top,
+    left
+  })
+
+  isOpen.value = true
+}
+
+const items = [
+  {
+    label: 'Edit',
+    icon: 'i-heroicons-pencil-square-20-solid',
+    click: () => {
+      console.log('Edit')
+    }
+  },
+  {
+    label: 'Duplicate',
+    icon: 'i-heroicons-document-duplicate-20-solid',
+  }
+]
 
 </script>
 
@@ -114,9 +198,14 @@ watch(selected, async () => {
       </div>
     </div>
   </div>
-  <div ref="el" class="w-full h-screen">
-    <VueFlow v-model="elements">
-    </VueFlow>
+  <div ref="el" @contextmenu.prevent="onContextMenu">
+    <div class="w-full h-screen">
+      <VueFlow v-model="elements">
+      </VueFlow>
+    </div>
+    <UContextMenu v-model="isOpen" :virtual-element="virtualElement">
+      <SnapshotContextMenu :items="items" :selected="rightClickSelect" />
+    </UContextMenu>
   </div>
 </template>
 
@@ -126,5 +215,4 @@ watch(selected, async () => {
 
 /* import the default theme, this is optional but generally recommended */
 @import '@vue-flow/core/dist/theme-default.css';
-
 </style>

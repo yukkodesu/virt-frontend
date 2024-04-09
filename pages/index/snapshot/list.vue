@@ -1,5 +1,5 @@
 <template>
-    <div class="py-2 flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
         <div class="flex gap-4">
             <div class="flex items-center">
                 <span class="pr-2 text-sm">Select VM:</span>
@@ -44,6 +44,9 @@ import dayjs from 'dayjs';
 import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(localizedFormat);
 
+definePageMeta({
+    title: "Snapshot List"
+});
 
 const virtStore = useVirtStore();
 const { domains, updateDomains } = virtStore;

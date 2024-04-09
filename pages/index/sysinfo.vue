@@ -1,5 +1,5 @@
 <template>
-    <div class="py-2">
+    <div>
         <div class="flex gap-2 pb-2">
             <UCard>
                 <SysInfoRamUsageGraph :sysinfo="sysinfo" />
@@ -15,6 +15,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+    title: "System Utilization"
+});
+
 const showAlert = inject<(msg: string) => void>('showAlert');
 
 const { data: sysinfo, error: fetchError, refresh } = await useFetch<{

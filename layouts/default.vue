@@ -5,7 +5,12 @@
             <slot name="aside" />
         </div>
         <div class="h-[1000px] col-span-8">
+            <h2 class="py-4 text-lg font-semibold text-gray-900" v-if="route.meta.title">{{ route.meta.title }}</h2>
             <slot />
         </div>
     </div>
 </template>
+
+<script lang="ts" setup>
+const route = useRoute();
+</script>

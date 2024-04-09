@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Elements } from '@vue-flow/core'
+import type { Elements, MouseTouchEvent, NodeMouseEvent } from '@vue-flow/core'
 import { VueFlow } from '@vue-flow/core'
 import { useMouse, useWindowScroll, useElementSize } from '@vueuse/core';
 
@@ -148,15 +148,25 @@ watch(selected, async () => {
 const rightClickSelect = ref("None");
 const { x, y } = useMouse();
 const { y: windowY } = useWindowScroll();
+const selectedNode = ref<string | null>(null);
+const snapshotInfo = computed(() => {
+  if (!snapshotData.value || !selectedNode.value) return null;
+  return (snapshotData.value)[selected.value].find(it => it.name === selectedNode.value);
+})
 
 const isOpen = ref(false)
 const virtualElement = ref({ getBoundingClientRect() { } });
 
+const onNodeClick = (e: NodeMouseEvent) => {
+  selectedNode.value = e.node.id;
+}
+
 function onContextMenu(e: MouseEvent) {
   if (e.target instanceof Element) {
     const el: HTMLElement | null = e.target.closest(".snapshot-node");
-    if(!el) return;
+    if (!el) return;
     rightClickSelect.value = `${el.dataset.id}`;
+    selectedNode.value = `${el.dataset.id}`;
   }
   const top = unref(y) - unref(windowY)
   const left = unref(x)
@@ -188,24 +198,29 @@ const items = [
 </script>
 
 <template>
-  <div class="py-2 flex flex-col gap-2">
-    <div class="flex gap-4">
-      <div class="flex items-center">
-        <span class="pr-2 text-sm">Select VM:</span>
-        <div class="max-w-fit">
-          <USelectMenu v-model="selected" :options="options" />
+  <div class="relative">
+    <div class="py-2 flex flex-col gap-2">
+      <div class="flex gap-4">
+        <div class="flex items-center">
+          <span class="pr-2 text-sm">Select VM:</span>
+          <div class="max-w-fit">
+            <USelectMenu v-model="selected" :options="options" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div ref="el" @contextmenu.prevent="onContextMenu">
-    <div class="w-full h-screen">
-      <VueFlow v-model="elements">
-      </VueFlow>
+    <div ref="el" @contextmenu.prevent="onContextMenu">
+      <div class="w-full h-screen">
+        <VueFlow v-model="elements" @node-click="onNodeClick">
+        </VueFlow>
+      </div>
+      <UContextMenu v-model="isOpen" :virtual-element="virtualElement">
+        <SnapshotContextMenu :items="items" :selected="rightClickSelect" />
+      </UContextMenu>
     </div>
-    <UContextMenu v-model="isOpen" :virtual-element="virtualElement">
-      <SnapshotContextMenu :items="items" :selected="rightClickSelect" />
-    </UContextMenu>
+    <div class="py-2 absolute right-0 top-0 w-[300px]">
+      <SnapshotInfoWidget :snapshot-info="snapshotInfo" />
+    </div>
   </div>
 </template>
 

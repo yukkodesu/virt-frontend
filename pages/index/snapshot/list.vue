@@ -48,7 +48,7 @@ dayjs.extend(localizedFormat);
 const virtStore = useVirtStore();
 const { domains, updateDomains } = virtStore;
 await callOnce(updateDomains);
-const options = ref([]);
+const options = ref<string[]>([]);
 const selected = ref("Loading");
 const isTableLoading = ref(true);
 domains.map(it => options.value.push(it['name']));

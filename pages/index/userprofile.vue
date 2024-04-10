@@ -1,7 +1,9 @@
-<template></template>
+<template>
+    <p>userprofile</p>
+</template>
 
 <script lang="ts" setup>
 definePageMeta({
-    title: "User Profile"
+    title: 'User Profile',
 });
 </script>

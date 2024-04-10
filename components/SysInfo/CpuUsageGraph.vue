@@ -1,52 +1,57 @@
 <template>
     <ClientOnly>
-        <apexchart type="line" height="350" :options="chartOptions" :series="series">
-        </apexchart>
+        <apexchart
+            type="line"
+            height="350"
+            :options="chartOptions"
+            :series="series"
+        />
     </ClientOnly>
 </template>
 
 <script setup lang="ts">
 type SysInfo = {
-    "used swap": string;
-    "cpu number": string;
-    "cpu usage": string;
-    timestamp: string;
-    "used memory": string;
-    "total memory": string;
-    "total swap": string;
+    'used swap': string;
+    'cpu number': string;
+    'cpu usage': string;
+    'timestamp': string;
+    'used memory': string;
+    'total memory': string;
+    'total swap': string;
 };
 const props = defineProps<{
-    sysinfo: SysInfo
+    sysinfo: SysInfo;
 }>();
 const series = ref<Array<{
-    name: string,
-    data: { x: number, y: number }[]
+    name: string;
+    data: { x: number; y: number }[];
 }>>([]);
 
 for (let i = 0; i < Number(props.sysinfo['cpu number']); i++) {
     series.value.push({
         name: `Core ${i}`,
-        data: []
-    })
+        data: [],
+    });
 }
 
 const updateGraph = (sysinfo: SysInfo) => {
     const seriesVal = series.value;
     const timestamp = Number(sysinfo['timestamp']);
     const usage = JSON.parse(sysinfo['cpu usage']);
-    Object.entries(usage).forEach(([k, v]: [string, any]) => {
+    Object.entries(usage).forEach(([k, v]: [string, unknown]) => {
         const i = Number(k);
-        seriesVal[i].data.push({ x: timestamp, y: v });
+        if (typeof v !== 'string') return;
+        seriesVal[i].data.push({ x: timestamp, y: Number(v) });
     });
     if (seriesVal[0]?.data?.length <= 15) return;
     seriesVal.forEach(it => it.data.shift());
-}
+};
 
 updateGraph(props.sysinfo);
 
 watch(() => props.sysinfo, (sysinfo) => {
     updateGraph(sysinfo);
-})
+});
 const chartOptions = ref({
     chart: {
         type: 'line',
@@ -63,14 +68,14 @@ const chartOptions = ref({
         },
     },
     dataLabels: {
-        enabled: false
+        enabled: false,
     },
     stroke: {
-        curve: 'smooth'
+        curve: 'smooth',
     },
     legend: {
         position: 'top',
-        horizontalAlign: 'left'
+        horizontalAlign: 'left',
     },
     xaxis: {
         type: 'datetime',
@@ -79,8 +84,8 @@ const chartOptions = ref({
         max: 100.0,
         min: 0.0,
         labels: {
-            formatter: (val: number) => `${val.toFixed(0)}%`
-        }
+            formatter: (val: number) => `${val.toFixed(0)}%`,
+        },
     },
 });
 </script>

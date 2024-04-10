@@ -16,30 +16,30 @@
 
 <script setup lang="ts">
 definePageMeta({
-    title: "System Utilization"
+    title: 'System Utilization',
 });
 
-const showAlert = inject<(msg: string) => void>('showAlert');
+// const showAlert = inject<(msg: string) => void>('showAlert');
 
-const { data: sysinfo, error: fetchError, refresh } = await useFetch<{
-    "used swap": string,
-    "cpu number": string,
-    "cpu usage": string,
-    timestamp: string,
-    "used memory": string,
-    "total memory": string,
-    "total swap": string,
+const { data: sysinfo, refresh } = await useFetch<{
+    'used swap': string;
+    'cpu number': string;
+    'cpu usage': string;
+    'timestamp': string;
+    'used memory': string;
+    'total memory': string;
+    'total swap': string;
 }>('/api/sysinfo', { timeout: 5000 });
 
 refresh();
 
-let timer: any = null;
+let timer: number | null = null;
 onMounted(() => {
     timer = setInterval(() => {
         refresh();
     }, 2000);
-})
+});
 onBeforeUnmount(() => {
     clearInterval(timer);
-})
+});
 </script>

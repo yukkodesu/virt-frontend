@@ -1,9 +1,11 @@
 <template>
-    <UCard :ui="{
-        body: {
-            padding: 'sm:p-4',
-        }
-    }">
+    <UCard
+        :ui="{
+            body: {
+                padding: 'sm:p-4',
+            },
+        }"
+    >
         <div v-if="snapshotInfo">
             <h3 class="text-sm/6 text-gray-900 font-semibold truncate">
                 {{ snapshotInfo.name }} Info
@@ -15,8 +17,8 @@
                 </li>
                 <li class="flex gap-2">
                     <span class="block text-sm/6 text-gray-700">Create Time:</span>
-                    <span class="block text-sm/6 text-gray-500">{{ dayjs(Number(snapshotInfo.creationTime) *
-                        1000).format('lll') }}</span>
+                    <span class="block text-sm/6 text-gray-500">{{ dayjs(Number(snapshotInfo.creationTime)
+                        * 1000).format('lll') }}</span>
                 </li>
                 <li class="flex gap-2">
                     <span class="block text-sm/6 text-gray-700">State:</span>
@@ -38,14 +40,15 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs';
-import localizedFormat from "dayjs/plugin/localizedFormat";
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
 dayjs.extend(localizedFormat);
 defineProps<{
     snapshotInfo: {
-        name: string,
-        creationTime: string,
-        state: string,
-        description: string,
-    } | null | undefined
+        name: string;
+        creationTime: string;
+        state: string;
+        description: string;
+    } | null | undefined;
 }>();
 </script>

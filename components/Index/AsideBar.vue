@@ -1,9 +1,19 @@
 <template>
     <div class="flex flex-col py-8 px-4">
-        <div v-for="(i, idx) in asideList">
-            <IndexAsideBarTitle :title="i.title" :open="true" @click="onClick(idx)" />
+        <div
+            v-for="(i, idx) in asideList"
+            :key="i.title"
+        >
+            <IndexAsideBarTitle
+                :title="i.title"
+                :open="true"
+                @click="onClick(idx)"
+            />
             <Transition>
-                <IndexAsideBarItem :items="i.children" v-show="isOpen[idx]" />
+                <IndexAsideBarItem
+                    v-show="isOpen[idx]"
+                    :items="i.children"
+                />
             </Transition>
         </div>
     </div>
@@ -11,52 +21,53 @@
 
 <script setup>
 import { useVirtStore } from '~/store/virt';
+
 const virtStore = useVirtStore();
 const { domains, updateDomains } = virtStore;
 const asideList = ref([
     {
-        title: "Host Infomation",
+        title: 'Host Infomation',
         children: [
             {
-                title: "System Utilization",
-                navTo: "/sysinfo",
+                title: 'System Utilization',
+                navTo: '/sysinfo',
             },
             {
-                title: "User Profile",
-                navTo: "/userprofile",
+                title: 'User Profile',
+                navTo: '/userprofile',
             },
-        ]
+        ],
     },
     {
-        title: "Virtual Machine",
+        title: 'Virtual Machine',
         children: [
             {
-                title: "Virt List",
-                navTo: "/vm/list",
-            }
-        ]
+                title: 'Virt List',
+                navTo: '/vm/list',
+            },
+        ],
     },
     {
-        title: "SnapShots",
+        title: 'SnapShots',
         children: [
             {
-                title: "Snapshot List",
-                navTo: "/snapshot/list",
+                title: 'Snapshot List',
+                navTo: '/snapshot/list',
             },
             {
-                title: "GraphView Manager",
-                navTo: "/snapshot/graphview",
+                title: 'GraphView Manager',
+                navTo: '/snapshot/graphview',
             },
-        ]
-    }
+        ],
+    },
 ]);
 
 await callOnce(updateDomains);
-domains?.forEach(it => {
+domains?.forEach((it) => {
     asideList.value[1].children.push({
         title: it['name'],
         navTo: `/vm/${it['name']}`,
-    })
+    });
 });
 const isOpen = ref(Array(asideList.value.length).fill(true));
 
@@ -64,7 +75,6 @@ const onClick = (idx) => {
     const arr = isOpen.value;
     arr[idx] = !arr[idx];
 };
-
 </script>
 
 <style scoped>

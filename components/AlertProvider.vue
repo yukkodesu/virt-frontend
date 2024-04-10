@@ -1,21 +1,26 @@
 <template>
-    <slot></slot>
+    <slot />
     <Teleport to="body">
-        <Alert :alert-msg="alertOpt.msg" :show="alertOpt.show" icon="i-heroicons-x-circle-16-solid"
-            :close="() => { alertOpt.show = false }">
-        </Alert>
+        <AlertModal
+            :alert-msg="alertOpt.msg"
+            :show="alertOpt.show"
+            icon="i-heroicons-x-circle-16-solid"
+            :close="() => { alertOpt.show = false }"
+        />
     </Teleport>
 </template>
+
 <script setup lang="ts">
 import { provide } from 'vue';
+
 const alertOpt = ref({
-    msg: "",
+    msg: '',
     show: false,
-})
+});
 
 const showAlert = (msg: string) => {
     alertOpt.value.msg = msg;
     alertOpt.value.show = true;
-}
+};
 provide<(msg: string) => void>('showAlert', showAlert);
 </script>

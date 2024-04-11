@@ -40,8 +40,8 @@ const updateGraph = (sysinfo: SysInfo) => {
     const usage = JSON.parse(sysinfo['cpu usage']);
     Object.entries(usage).forEach(([k, v]: [string, unknown]) => {
         const i = Number(k);
-        if (typeof v !== 'string') return;
-        seriesVal[i].data.push({ x: timestamp, y: Number(v) });
+        if (typeof v !== 'number') return;
+        seriesVal[i].data.push({ x: timestamp, y: v });
     });
     if (seriesVal[0]?.data?.length <= 15) return;
     seriesVal.forEach(it => it.data.shift());

@@ -21,6 +21,16 @@
                         placeholder="Search..."
                     />
                 </div>
+                <div>
+                    <UButton 
+                        color="white"
+                        variant="solid" 
+                        icon="i-heroicons-plus-16-solid"
+                        @click="onCreateBtnClick"
+                    >
+                        Create
+                    </UButton>
+                </div>
             </div>
             <UCard
                 :ui="{
@@ -55,8 +65,10 @@
         </div>
         <SnapshotEditor
             v-model:is-open="isEditorOpen"
-            v-model:snapshot-info="modelSnapshotInfo"
+            v-model:snapshot-info="modalSnapshotInfo"
             :on-confirm="onEditorComfirm"
+            :is-create="isCreateSnapshot"
+            :snapshot-list="snapshotData ? snapshotData[selected] : null"
         />
         <SnapshotAlertDialog
             v-model:is-open="isAlertOpen"
@@ -126,7 +138,7 @@ const col = [
 ];
 
 const isEditorOpen = ref(false);
-const modelSnapshotInfo = ref<{ name: string; description: string }>({
+const modalSnapshotInfo = ref<{ name: string; description: string; parent?: string; }>({
     name: '',
     description: '',
 });
@@ -140,14 +152,28 @@ const openAlert = (msg: string) => {
     isAlertOpen.value = true;
 };
 
-const items = row => [
+const isCreateSnapshot = ref(false);
+const onCreateBtnClick = () => {
+    modalSnapshotInfo.value = {
+        name: '',
+        description: '',
+        parent: ''
+    };
+    isEditorOpen.value = true;
+    isCreateSnapshot.value = true;
+    onEditorComfirm.value = async () => {
+        console.log(modalSnapshotInfo.value);
+    }
+}
+
+const items = (row: { name: string, description: string }) => [
     [
         {
             label: 'Edit Description',
             icon: 'i-heroicons-pencil-square-20-solid',
             click: () => {
                 isEditorOpen.value = true;
-                modelSnapshotInfo.value = {
+                modalSnapshotInfo.value = {
                     name: row['name'],
                     description: row['description'] === 'None' ? '' : row['description'],
                 };
@@ -162,7 +188,7 @@ const items = row => [
                         body: {
                             dom_name: selected.value,
                             snapshot_name: row['name'],
-                            description: modelSnapshotInfo.value.description,
+                            description: modalSnapshotInfo.value.description,
                         },
                     });
                     await refreshSnapshotData();

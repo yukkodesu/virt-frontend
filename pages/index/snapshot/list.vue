@@ -23,8 +23,6 @@
                 </div>
                 <div>
                     <UButton 
-                        color="white"
-                        variant="solid" 
                         icon="i-heroicons-plus-16-solid"
                         @click="onCreateBtnClick"
                     >
@@ -178,7 +176,6 @@ const items = (row: { name: string, description: string }) => [
                     description: row['description'] === 'None' ? '' : row['description'],
                 };
                 onEditorComfirm.value = async () => {
-                    isAlertOpen.value = false;
                     isTableLoading.value = true;
                     await $fetch('/api/edit-snapshot', {
                         headers: {

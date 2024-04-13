@@ -29,6 +29,18 @@
                     <span class="block text-sm/6 text-gray-500">{{ snapshotInfo.description === "" ? "None" : snapshotInfo.description }}</span>
                 </li>
             </ul>
+            <div class="pt-4">
+                <ul class="flex gap-2 flex-wrap">
+                    <li v-for="item in items" :key="item.label">
+                        <UButton 
+                            :icon="item.icon"
+                            variant="solid"
+                            @click="item.click">
+                            {{ item.label }}
+                        </UButton>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div v-else>
             <h3 class="text-sm/6 text-gray-900 font-semibold truncate">
@@ -44,6 +56,11 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 dayjs.extend(localizedFormat);
 defineProps<{
+    items: {
+        label: string;
+        icon: string;
+        click?: (() => void) | (() => Promise<void>);
+    }[];
     snapshotInfo: {
         name: string;
         creationTime: string;

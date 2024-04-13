@@ -126,13 +126,13 @@ const updateRender = async () => {
         elements.value.push({
             id: edge,
             label: edge,
-            position: { x: pos[edge].x + (width.value / 3), y: pos[edge].y },
+            position: { x: pos[edge].x + (width.value / 4), y: pos[edge].y },
             class: 'snapshot-node',
             style: edge === 'Current'
                 ? {
-                        'color': 'rgb(var(--color-primary-DEFAULT))',
-                        'border-color': 'rgb(var(--color-primary-DEFAULT))',
-                    }
+                    'color': 'rgb(var(--color-primary-DEFAULT))',
+                    'border-color': 'rgb(var(--color-primary-DEFAULT))',
+                }
                 : {},
         });
         (snapshotTree.value)[edge].forEach((it) => {
@@ -188,17 +188,113 @@ function onContextMenu(e: MouseEvent) {
     isContextMenuOpen.value = true;
 }
 
+
+const isEditorOpen = ref(false);
+const modalSnapshotInfo = ref<{ name: string; description: string; parent?: string; }>({
+    name: '',
+    description: '',
+});
+const onEditorComfirm = ref<(() => Promise<void>) | null>(null);
+
+const isAlertOpen = ref(false);
+const alertMsg = ref('');
+const onAlertComfirm = ref<(() => Promise<void>) | null>(null);
+const openAlert = (msg: string) => {
+    alertMsg.value = msg;
+    isAlertOpen.value = true;
+};
+
+const isCreateSnapshot = ref(false);
+
 const items = [
     {
-        label: 'Edit',
+        label: 'Edit Description',
         icon: 'i-heroicons-pencil-square-20-solid',
         click: () => {
-            console.log('Edit');
+            isEditorOpen.value = true;
+            modalSnapshotInfo.value = {
+                name: selectedNode.value ?? '',
+                description: snapshotInfo.value ? snapshotInfo.value.description : '',
+            };
+            onEditorComfirm.value = async () => {
+                await $fetch('/api/edit-snapshot', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: {
+                        dom_name: selected.value,
+                        snapshot_name: selectedNode.value,
+                        description: modalSnapshotInfo.value.description,
+                    },
+                });
+                await refreshSnapshotData();
+            };
         },
     },
     {
-        label: 'Duplicate',
+        label: 'Set Current',
+        icon: 'i-heroicons-check-circle-20-solid',
+        click: () => {
+            openAlert('Revert to another snapshot will discard all your changes in VM now, Do you still continue ?');
+            onAlertComfirm.value = async () => {
+                await $fetch('/api/set-current-snapshot', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: {
+                        dom_name: selected.value,
+                        snapshot_name: selectedNode.value,
+                    },
+                });
+                await refreshSnapshotData();
+                ;
+            };
+        },
+    },
+    {
+        label: 'Clone Into VM',
         icon: 'i-heroicons-document-duplicate-20-solid',
+        click: () => {
+            openAlert('Clone this snapshot into new VM, Do you still continue ?');
+            onAlertComfirm.value = async () => {
+                isAlertOpen.value = false;
+                await $fetch('/api/clone-snapshot-as-vm', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: {
+                        dom_name: selected.value,
+                        snapshot_name: selectedNode.value,
+                    },
+                });
+                await refreshSnapshotData();
+            };
+        },
+    },
+    {
+        label: 'Delete',
+        icon: 'i-heroicons-trash-20-solid',
+        click: () => {
+            openAlert('Delete snapshot will lose data on this snapshot. Do you still continue ?');
+            onAlertComfirm.value = async () => {
+                isAlertOpen.value = false;
+
+                await $fetch('/api/delete-snapshot', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: {
+                        dom_name: selected.value,
+                        snapshot_name: selectedNode.value,
+                    },
+                });
+                await refreshSnapshotData();
+            };
+        },
     },
 ];
 </script>
@@ -210,37 +306,27 @@ const items = [
                 <div class="flex items-center">
                     <span class="pr-2 text-sm">Select VM:</span>
                     <div class="max-w-fit">
-                        <USelectMenu
-                            v-model="selected"
-                            :options="options"
-                        />
+                        <USelectMenu v-model="selected" :options="options" />
                     </div>
                 </div>
             </div>
         </div>
-        <div
-            ref="el"
-            @contextmenu.prevent="onContextMenu"
-        >
+        <div ref="el" @contextmenu.prevent="onContextMenu">
             <div class="w-full h-screen">
-                <VueFlow
-                    v-model="elements"
-                    @node-click="onNodeClick"
-                />
+                <VueFlow v-model="elements" @node-click="onNodeClick" />
             </div>
-            <UContextMenu
-                v-model="isContextMenuOpen"
-                :virtual-element="virtualElement"
-            >
-                <SnapshotContextMenu
-                    :items="items"
-                    :selected="rightClickSelect"
-                />
+            <UContextMenu v-model="isContextMenuOpen" :virtual-element="virtualElement">
+                <SnapshotContextMenu :items="items" :selected="rightClickSelect" />
             </UContextMenu>
         </div>
         <div class="py-2 absolute right-0 top-0 w-[300px]">
-            <SnapshotInfoWidget :snapshot-info="snapshotInfo" />
+            <SnapshotInfoWidget :snapshot-info="snapshotInfo" :items="items" />
         </div>
+        <SnapshotEditor
+            v-model:is-open="isEditorOpen" v-model:snapshot-info="modalSnapshotInfo"
+            :on-confirm="onEditorComfirm" :is-create="isCreateSnapshot"
+            :snapshot-list="snapshotData ? snapshotData[selected] : null" />
+        <SnapshotAlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertComfirm" />
     </div>
 </template>
 

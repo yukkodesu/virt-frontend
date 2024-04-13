@@ -228,7 +228,8 @@ const items = [
                         description: modalSnapshotInfo.value.description,
                     },
                 });
-                await refreshSnapshotData();
+                await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
+                updateRender();
             };
         },
     },
@@ -248,8 +249,8 @@ const items = [
                         snapshot_name: selectedNode.value,
                     },
                 });
-                await refreshSnapshotData();
-                ;
+                await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
+                updateRender();
             };
         },
     },
@@ -270,7 +271,8 @@ const items = [
                         snapshot_name: selectedNode.value,
                     },
                 });
-                await refreshSnapshotData();
+                await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
+                updateRender();
             };
         },
     },
@@ -292,7 +294,8 @@ const items = [
                         snapshot_name: selectedNode.value,
                     },
                 });
-                await refreshSnapshotData();
+                await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
+                updateRender();
             };
         },
     },

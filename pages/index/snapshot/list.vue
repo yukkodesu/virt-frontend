@@ -220,7 +220,7 @@ const items = (row: { name: string, description: string }) => [
             },
         },
         {
-            label: 'Clone',
+            label: 'Clone Into VM',
             icon: 'i-heroicons-document-duplicate-20-solid',
             click: () => {
                 openAlert('Clone this snapshot into new VM, Do you still continue ?');

@@ -205,6 +205,26 @@ const openAlert = (msg: string) => {
 };
 
 const isCreateSnapshot = ref(false);
+const onCreateBtnClick = () => {
+    modalSnapshotInfo.value = {
+        name: '',
+        description: '',
+        parent: ''
+    };
+    isEditorOpen.value = true;
+    isCreateSnapshot.value = true;
+    onEditorComfirm.value = async () => {
+        await $fetch('/api/create-snapshot', {
+            method: 'POST',
+            headers: {
+                        'Content-Type': 'application/json',
+            },
+            body: modalSnapshotInfo.value
+        });
+        await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
+        updateRender();
+    }
+}
 
 const items = [
     {
@@ -312,9 +332,14 @@ const items = [
                         <USelectMenu v-model="selected" :options="options" />
                     </div>
                 </div>
+                <div>
+                    <UButton icon="i-heroicons-plus-16-solid" @click="onCreateBtnClick">
+                        Create
+                    </UButton>
+                </div>
             </div>
         </div>
-        <div ref="el" @contextmenu.prevent="onContextMenu">
+        <div ref="el" class="pt-2" @contextmenu.prevent="onContextMenu">
             <div class="w-full h-screen">
                 <VueFlow v-model="elements" @node-click="onNodeClick" />
             </div>

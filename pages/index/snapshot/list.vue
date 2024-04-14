@@ -160,7 +160,16 @@ const onCreateBtnClick = () => {
     isEditorOpen.value = true;
     isCreateSnapshot.value = true;
     onEditorComfirm.value = async () => {
-        console.log(modalSnapshotInfo.value);
+        isTableLoading.value = true;
+        await $fetch('/api/create-snapshot', {
+            method: 'POST',
+            headers: {
+                        'Content-Type': 'application/json',
+            },
+            body: modalSnapshotInfo.value
+        });
+        await refreshSnapshotData();
+        isTableLoading.value = false;
     }
 }
 

@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { useVirtStore } from '~/store/virt';
+import { virtState } from '~/components/VM/utils';
 
 definePageMeta({
     title: 'Virt Domains',
@@ -51,17 +52,6 @@ const searchInput = ref('');
 const isTableLoading = ref(true);
 
 await callOnce(updateDomains).then(() => isTableLoading.value = false);
-
-const virtState = [
-    'No State',
-    'Running',
-    'Blocked',
-    'Paused',
-    'Shutdown',
-    'Shutoff',
-    'Crashed',
-    'PM Suspended',
-];
 
 const tableData = computed(() => {
     return domains.map((it) => {

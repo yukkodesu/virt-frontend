@@ -24,6 +24,7 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "@novnc/novnc": "^1.4.0",
     "@nuxt/ui": "^2.12.0",
     "@pinia/nuxt": "^0.5.1",
     "@vue-flow/core": "^1.33.4",

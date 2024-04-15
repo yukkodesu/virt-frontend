@@ -30,6 +30,7 @@
                 </template>
             </UTable>
         </UCard>
+        <AlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertComfirm" />
     </div>
 </template>
 
@@ -133,18 +134,40 @@ const items = (row: {
             {
                 label: 'Suspend',
                 icon: 'i-heroicons-pause-20-solid',
-                click: setDomState.bind(undefined, row.name, "Suspend"),
+                click: setDomState.bind(undefined, row.name, "suspend"),
             },
             {
                 label: 'Destroy',
                 icon: 'i-tabler-plug-x',
-                click: setDomState.bind(undefined, row.name, "destroy"),
+                click: () => {
+                    openAlert("Do you want to cut power of your VM? This action could cause issue in VM.");
+                    onAlertComfirm.value = async () => {
+                        await setDomState(row.name, "destroy");
+                        isAlertOpen.value = false;
+                    };
+                },
             },
             {
                 label: 'Delete',
                 icon: 'i-heroicons-trash-20-solid',
-                click: setDomState.bind(undefined, row.name, "undefine"),
+                click: () => {
+                    openAlert("Do you want to delete your VM? This action will lose data in that VM.");
+                    onAlertComfirm.value = async () => {
+                        await setDomState(row.name, "delete");
+                        isAlertOpen.value = false;
+                    };
+                },
             },
         ],
-    ];
+];
+
+//Alert Dialog
+const isAlertOpen = ref(false);
+const alertMsg = ref('');
+const onAlertComfirm = ref<(() => Promise<void>) | null>(null);
+const openAlert = (msg: string) => {
+    alertMsg.value = msg;
+    isAlertOpen.value = true;
+};
+
 </script>

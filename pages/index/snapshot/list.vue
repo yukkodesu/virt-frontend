@@ -68,7 +68,7 @@
             :is-create="isCreateSnapshot"
             :snapshot-list="snapshotData ? snapshotData[selected] : null"
         />
-        <SnapshotAlertDialog
+        <AlertDialog
             v-model:is-open="isAlertOpen"
             :msg="alertMsg"
             :on-confirm="onAlertComfirm"

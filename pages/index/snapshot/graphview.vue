@@ -354,7 +354,7 @@ const items = [
             v-model:is-open="isEditorOpen" v-model:snapshot-info="modalSnapshotInfo"
             :on-confirm="onEditorComfirm" :is-create="isCreateSnapshot"
             :snapshot-list="snapshotData ? snapshotData[selected] : null" />
-        <SnapshotAlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertComfirm" />
+        <AlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertComfirm" />
     </div>
 </template>
 

@@ -28,9 +28,14 @@
             </template>
         </UCard>
         <UCard>
+            <template #header>
+                <h2 class="text-md font-semibold">VNC Viewer</h2>
+            </template>
             <template #default>
-                <div class="w-full aspect-[3/2] bg-slate-800">
-                    123
+                <div class="flex justify-center">
+                    <div class="h-[400px] w-full bg-slate-200">
+                        123
+                    </div>
                 </div>
             </template>
         </UCard>

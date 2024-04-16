@@ -32,10 +32,13 @@
                 <h2 class="text-md font-semibold">VNC Viewer</h2>
             </template>
             <template #default>
-                <div class="flex justify-center">
-                    <div class="h-[400px] w-full bg-slate-200">
-                        123
+                <div class="flex justify-center relative">
+                    <div class="h-[600px] w-full bg-slate-100">
+                        <VMVncComponent :port="vnc_config?.port" :password="vnc_config?.password" :view-only="true" />
                     </div>
+                    <button class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <UIcon name="i-heroicons-play-20-solid" class="text-8xl text-white" />
+                    </button>
                 </div>
             </template>
         </UCard>
@@ -57,7 +60,20 @@ definePageMeta({
 const virtStore = useVirtStore();
 const { domains, updateDomains } = virtStore;
 
-const domain = computed(() => domains.find(it => it.name === `${route.path.split('/').at(2)}`));
+const dom_name = computed(() => `${route.path.split('/').at(2)}`);
+const domain = computed(() => domains.find(it => it.name === dom_name.value));
+
+const { data: vnc_config, refresh: refreshVncConfig } = useFetch<{ port: string; password: string; }>('/api/get-vnc-display-config', {
+    method: 'POST',
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dom_name.value),
+});
+
+watch(() => dom_name.value, () => {
+    refreshVncConfig();
+})
 
 const setDomState = async (dom_name: string | undefined, state: string) => {
     if (!dom_name) return;

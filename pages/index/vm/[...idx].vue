@@ -36,7 +36,7 @@
                     <div class="h-[600px] w-full bg-slate-100">
                         <VMVncComponent :port="vnc_config?.port" :password="vnc_config?.password" :view-only="true" />
                     </div>
-                    <button class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <button class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow">
                         <UIcon name="i-heroicons-play-20-solid" class="text-8xl text-white" />
                     </button>
                 </div>

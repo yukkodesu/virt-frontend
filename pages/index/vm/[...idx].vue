@@ -14,7 +14,11 @@
             <template #default>
                 <div class="flex items-center gap-12 px-6 py-0">
                     <div>
-                        <img :src="`/distro_icons/512/512_debian.png`" alt="os icon" class="h-[60px] w-[60px]">
+                        <img 
+                            :src="`/distro_icons/512/512_${domain?.name.includes('win') ? 'windows' : 'debian'}.png`"
+                            alt="os icon"
+                            class="h-[60px] w-[60px]"
+                        >
                     </div>
                     <div class="text-sm/6 text-gray-500 px-2">
                         <ul class="grid grid-cols-2 gap-x-[100px] gap-y-4">

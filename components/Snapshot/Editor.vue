@@ -35,8 +35,10 @@ const submitSnapshotEdit = async () => {
         <UModal v-model="isOpen">
             <UCard :ui="{ ring: '' }">
                 <template #header>
-                    <h2 v-if="!isCreate" class="text-base font-semibold">Edit Snapshot: {{ props.snapshotInfo.name }}</h2>
-                    <h2 v-else>Create New Snapshot</h2>
+                    <div class="text-base font-semibold">
+                        <h2 v-if="!isCreate">Edit Snapshot: {{ props.snapshotInfo.name }}</h2>
+                        <h2 v-else>Create New Snapshot</h2>
+                    </div>
                 </template>
                 <template #default>
                     <UForm

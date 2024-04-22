@@ -31,10 +31,12 @@
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",
     "apexcharts": "^3.45.2",
+    "cron-validate": "^1.4.5",
     "dayjs": "^1.11.10",
     "lodash-es": "^4.17.21",
     "pinia": "^2.1.7",
     "typescript": "^5.4.4",
-    "vue3-apexcharts": "^1.4.4"
+    "vue3-apexcharts": "^1.4.4",
+    "yup": "^1.4.0"
   }
 }

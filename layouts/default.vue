@@ -5,7 +5,7 @@
             <div class="top-[64px] sticky h-min col-span-2 overflow-y-auto">
                 <slot name="aside" />
             </div>
-            <div class="h-[1000px] col-span-8">
+            <div class="col-span-8">
                 <h2
                     v-if="route.meta.title"
                     class="py-4 text-lg font-semibold text-gray-900"

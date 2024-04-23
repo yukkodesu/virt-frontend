@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
 
 const setDomState = async (dom_name: string, state: string) => {
     isTableLoading.value = true;
-    await $fetch('/api/alt-vm-state', {
+    await $fetch('/api/v1/virt/set-state', {
         method: 'POST',
         body: {
             dom_name,

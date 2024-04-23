@@ -69,7 +69,7 @@ const { domains, updateDomains } = virtStore;
 const dom_name = computed(() => `${route.path.split('/').at(2)}`);
 const domain = computed(() => domains.find(it => it.name === dom_name.value));
 
-const { data: vnc_config, refresh: refreshVncConfig } = useFetch<{ port: string; password: string; }>('/api/get-vnc-display-config', {
+const { data: vnc_config, refresh: refreshVncConfig } = useFetch<{ port: string; password: string; }>('/api/v1/vnc/display-config', {
     method: 'POST',
     headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const isConnectable = computed(() => domain.value?.state === '1');
 const setDomState = async (state: string) => {
     // console.log(`set ${dom_name.value} ${state}`);
     if (!dom_name.value) return;
-    await $fetch('/api/alt-vm-state', {
+    await $fetch('/api/v1/virt/set-state', {
         method: 'POST',
         body: {
             dom_name: dom_name.value,

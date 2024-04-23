@@ -58,16 +58,14 @@ const isOpen = defineModel<boolean>('isOpen');
 
 const submit = async () => {
     isOpen.value = false;
-    await $fetch("/api/sched-task", {
+    await $fetch("/api/v1/snapshot/sched-task/add", {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
         },
         body: {
-            "Add": {
-                dom_name: props.domain,
-                cron: state.value.cron,
-            }
+            dom_name: props.domain,
+            cron: state.value.cron,
         }
     });
 };

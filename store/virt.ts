@@ -15,7 +15,7 @@ export const useVirtStore = defineStore('virt', {
     },
     actions: {
         async updateDomains() {
-            const { data: domains } = await useFetch<Domains[]>('/api/list-all');
+            const { data: domains } = await useFetch<Domains[]>('/api/v1/virt/list');
             if (!domains.value) return;
             this.domains.splice(0);
             domains.value.forEach((it) => {

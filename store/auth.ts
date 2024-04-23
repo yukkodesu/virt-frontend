@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', {
         },
         async authenticateUser({ username, password }: UserPayloudInterface) {
             this.loading = true;
-            await $fetch('/api/login', {
+            await $fetch('/api/v1/account/login', {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',

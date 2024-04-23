@@ -25,7 +25,7 @@ selected.value = (options.value)[0];
 
 const { data: snapshotTree, refresh: refreshSnapshotTree } = useAsyncData<{
     [idx: string]: string[];
-}>('snapshotTree', () => $fetch('/api/list-snapshot-tree', {
+}>('snapshotTree', () => $fetch('/api/v1/snapshot/list-tree', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const { data: snapshotData, refresh: refreshSnapshotData } = useAsyncData<{
         name: string;
         description: string;
     }[];
-}>('snapshotData', () => $fetch('/api/list-snapshot', {
+}>('snapshotData', () => $fetch('/api/v1/snapshot/list', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ const items = [
                 description: snapshotInfo.value ? snapshotInfo.value.description : '',
             };
             onEditorComfirm.value = async () => {
-                await $fetch('/api/edit-snapshot', {
+                await $fetch('/api/v1/snapshot/edit', {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -237,7 +237,7 @@ const items = [
         click: () => {
             openAlert('Revert to another snapshot will discard all your changes in VM now, Do you still continue ?');
             onAlertComfirm.value = async () => {
-                await $fetch('/api/set-current-snapshot', {
+                await $fetch('/api/v1/snapshot/set-current', {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -259,7 +259,7 @@ const items = [
             openAlert('Clone this snapshot into new VM, Do you still continue ?');
             onAlertComfirm.value = async () => {
                 isAlertOpen.value = false;
-                await $fetch('/api/clone-snapshot-as-vm', {
+                await $fetch('/api/v1/snapshot/clone-as-vm', {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -282,7 +282,7 @@ const items = [
             onAlertComfirm.value = async () => {
                 isAlertOpen.value = false;
 
-                await $fetch('/api/delete-snapshot', {
+                await $fetch('/api/v1/snapshot/delete', {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -309,7 +309,7 @@ const onCreateBtnClick = () => {
     isEditorOpen.value = true;
     isCreateSnapshot.value = true;
     onEditorComfirm.value = async () => {
-        await $fetch('/api/create-snapshot', {
+        await $fetch('/api/v1/snapshot/create', {
             method: 'POST',
             headers: {
                         'Content-Type': 'application/json',

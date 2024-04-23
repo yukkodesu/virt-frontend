@@ -29,7 +29,7 @@ const { data: sysinfo, refresh } = await useFetch<{
     'used memory': string;
     'total memory': string;
     'total swap': string;
-}>('/api/sysinfo', { timeout: 5000 });
+}>('/api/v1/sys/utilization/get', { timeout: 5000 });
 
 refresh();
 

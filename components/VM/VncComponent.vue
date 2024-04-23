@@ -54,7 +54,7 @@ const createVncConnection = () => {
     const host = window.location.hostname;
     const port = props.port;
     const password = props.password;
-    const url = `${window.location.protocol === "https:" ? "wss" : "ws"}://${host}:8000/api/ws/${port}`;
+    const url = `${window.location.protocol === "https:" ? "wss" : "ws"}://${host}:8000/api/v1/vnc/ws-stream/${port}`;
     // Creating a new RFB object will start a new connection
     rfb = new RFB(document.getElementById("screen"), url,
         { credentials: { password: password } });

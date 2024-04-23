@@ -113,7 +113,7 @@ const { data: snapshotData, refresh: refreshSnapshotData } = useAsyncData<{
         name: string;
         description: string;
     }[];
-}>('snapshotData', () => $fetch('/api/list-snapshot', {
+}>('snapshotData', () => $fetch('/api/v1/snapshot/list', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -172,7 +172,7 @@ const items = (row: { name: string, description: string }) => [
                 };
                 onEditorComfirm.value = async () => {
                     isTableLoading.value = true;
-                    await $fetch('/api/edit-snapshot', {
+                    await $fetch('/api/v1/snapshot/edit', {
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -196,7 +196,7 @@ const items = (row: { name: string, description: string }) => [
                 onAlertComfirm.value = async () => {
                     isAlertOpen.value = false;
                     isTableLoading.value = true;
-                    await $fetch('/api/set-current-snapshot', {
+                    await $fetch('/api/v1/snapshot/set-current', {
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -219,7 +219,7 @@ const items = (row: { name: string, description: string }) => [
                 onAlertComfirm.value = async () => {
                     isAlertOpen.value = false;
                     isTableLoading.value = true;
-                    await $fetch('/api/clone-snapshot-as-vm', {
+                    await $fetch('/api/v1/snapshot/clone-as-vm', {
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -242,7 +242,7 @@ const items = (row: { name: string, description: string }) => [
                 onAlertComfirm.value = async () => {
                     isAlertOpen.value = false;
                     isTableLoading.value = true;
-                    await $fetch('/api/delete-snapshot', {
+                    await $fetch('/api/v1/snapshot/delete', {
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -308,7 +308,7 @@ const onCreateBtnClick = () => {
     isCreateSnapshot.value = true;
     onEditorComfirm.value = async () => {
         isTableLoading.value = true;
-        await $fetch('/api/create-snapshot', {
+        await $fetch('/api/v1/snapshot/create', {
             method: 'POST',
             headers: {
                         'Content-Type': 'application/json',

@@ -38,7 +38,7 @@
             <template #default>
                 <div class="flex justify-center relative">
                     <div class="h-[600px] w-full bg-slate-100">
-                        <VMVncComponent :port="vnc_config?.port" :password="vnc_config?.password" :view-only="true" />
+                        <VMVncComponent :port="vnc_config?.port" :password="vnc_config?.password" :view-only="true" :is-connection-available="isConnectable" />
                     </div>
                     <button class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow">
                         <UIcon name="i-heroicons-play-20-solid" class="text-8xl text-white" />
@@ -79,12 +79,26 @@ watch(() => dom_name.value, () => {
     refreshVncConfig();
 })
 
-const setDomState = async (dom_name: string | undefined, state: string) => {
-    if (!dom_name) return;
+let timer: number | null = null;
+onMounted(() => {
+    timer = setInterval(() => {
+        updateDomains();
+    }, 4000);
+});
+
+onBeforeUnmount(() => {
+    clearInterval(timer);
+});
+
+const isConnectable = computed(() => domain.value?.state === '1');
+
+const setDomState = async (state: string) => {
+    // console.log(`set ${dom_name.value} ${state}`);
+    if (!dom_name.value) return;
     await $fetch('/api/alt-vm-state', {
         method: 'POST',
         body: {
-            dom_name,
+            dom_name: dom_name.value,
             state,
         }
     });
@@ -97,17 +111,17 @@ const items =
         {
             label: 'Start',
             icon: 'i-heroicons-play-20-solid',
-            click: setDomState.bind(undefined, domain.value?.name, "start"),
+            click: setDomState.bind(undefined, "start"),
         },
         {
             label: 'Shutdown',
             icon: 'i-heroicons-stop-20-solid',
-            click: setDomState.bind(undefined, domain.value?.name, "shutdown"),
+            click: setDomState.bind(undefined, "shutdown"),
         },
         {
             label: 'Suspend',
             icon: 'i-heroicons-pause-20-solid',
-            click: setDomState.bind(undefined, domain.value?.name, "suspend"),
+            click: setDomState.bind(undefined, "suspend"),
         },
         {
             label: 'Destroy',
@@ -115,7 +129,7 @@ const items =
             click: () => {
                 openAlert("Do you want to cut power of your VM? This action could cause issue in VM.");
                 onAlertComfirm.value = async () => {
-                    await setDomState(domain.value?.name, "destroy");
+                    await setDomState("destroy");
                     isAlertOpen.value = false;
                 };
             },

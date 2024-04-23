@@ -7,11 +7,11 @@ import RFB from '@novnc/novnc/core/rfb';
 // import { useElementSize } from '@vueuse/core';
 
 // eslint-disable-next-line vue/require-prop-types
-const props = defineProps(['port', 'password', 'viewOnly']);
+const props = defineProps(['port', 'password', 'viewOnly', 'isConnectionAvailable']);
 
 // const { height, width } = useElementSize(el);
 
-let rfb;
+let rfb = null;
 let desktopName;
 
 // When this function is called we have
@@ -27,6 +27,7 @@ function disconnectedFromServer(e) {
     } else {
         status("Something went wrong, connection is closed");
     }
+    rfb = null;
 }
 
 // When this function is called, the server requires
@@ -47,7 +48,7 @@ function status(text) {
     console.info(text);
 }
 
-watch(props, () => {
+const createVncConnection = () => {
     if (!props.port || !props.password) return;
     status("Connecting");
     const host = window.location.hostname;
@@ -70,6 +71,19 @@ watch(props, () => {
     rfb.scaleViewport = true;
     rfb.clipViewport = true;
     rfb.resizeSession = true;
+}
+
+watch(props, () => {
+    let timer = null;
+    // console.log("props change!", props);
+    timer = setInterval(() => {
+        if (!props.isConnectionAvailable || rfb !== null) { 
+            clearInterval(timer); 
+            return; 
+        }
+        if (rfb === null) createVncConnection();
+        clearInterval(timer);
+    }, 2000);
 }, { deep: true, });
 
 </script>

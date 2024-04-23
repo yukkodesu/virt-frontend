@@ -25,7 +25,6 @@ import cron from 'cron-validate';
 
 const props = defineProps<{
     domain: string;
-    onConfirm: (() => Promise<void>) | null;
 }>();
 
 addMethod(string, 'isCronExpression', function () {
@@ -55,10 +54,21 @@ const state = ref({
     cron: "",
 })
 
-const isOpen = ref(true);
+const isOpen = defineModel<boolean>('isOpen');
 
 const submit = async () => {
     isOpen.value = false;
-    props.onConfirm && props.onConfirm();
+    await $fetch("/api/sched-task", {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: {
+            "Add": {
+                dom_name: props.domain,
+                cron: state.value.cron,
+            }
+        }
+    });
 };
 </script>

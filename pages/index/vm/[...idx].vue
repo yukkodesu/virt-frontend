@@ -14,11 +14,9 @@
             <template #default>
                 <div class="flex items-center gap-12 px-6 py-0">
                     <div>
-                        <img 
+                        <img
                             :src="`/distro_icons/512/512_${domain?.name.includes('win') ? 'windows' : 'debian'}.png`"
-                            alt="os icon"
-                            class="h-[60px] w-[60px]"
-                        >
+                            alt="os icon" class="h-[60px] w-[60px]">
                     </div>
                     <div class="text-sm/6 text-gray-500 px-2">
                         <ul class="grid grid-cols-2 gap-x-[100px] gap-y-4">
@@ -38,9 +36,13 @@
             <template #default>
                 <div class="flex justify-center relative">
                     <div class="h-[600px] w-full bg-slate-100">
-                        <VMVncComponent :port="vnc_config?.port" :password="vnc_config?.password" :view-only="true" :is-connection-available="isConnectable" />
+                        <VMVncComponent
+                            :port="vnc_config?.port" :password="vnc_config?.password" :view-only="true"
+                            :is-connection-available="isConnectable" />
                     </div>
-                    <button class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow">
+                    <button
+                        class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow"
+                        @click="openVNCWindow">
                         <UIcon name="i-heroicons-play-20-solid" class="text-8xl text-white" />
                     </button>
                 </div>
@@ -144,5 +146,17 @@ const openAlert = (msg: string) => {
     alertMsg.value = msg;
     isAlertOpen.value = true;
 };
+
+const openVNCWindow = () => {
+    if (!isConnectable.value) return;
+    const url = useRouter().resolve({
+        path: "/vnc-viewer",
+        query: {
+            port: vnc_config.value?.port,
+            password: vnc_config.value?.password,
+        }
+    }).href;
+    window.open(url, "VNC Viewer", "popup,width=1300,height=800");
+}
 
 </script>

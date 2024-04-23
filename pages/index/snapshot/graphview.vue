@@ -204,28 +204,6 @@ const openAlert = (msg: string) => {
     isAlertOpen.value = true;
 };
 
-const isCreateSnapshot = ref(false);
-const onCreateBtnClick = () => {
-    modalSnapshotInfo.value = {
-        name: '',
-        description: '',
-        parent: ''
-    };
-    isEditorOpen.value = true;
-    isCreateSnapshot.value = true;
-    onEditorComfirm.value = async () => {
-        await $fetch('/api/create-snapshot', {
-            method: 'POST',
-            headers: {
-                        'Content-Type': 'application/json',
-            },
-            body: modalSnapshotInfo.value
-        });
-        await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
-        updateRender();
-    }
-}
-
 const items = [
     {
         label: 'Edit Description',
@@ -320,6 +298,33 @@ const items = [
         },
     },
 ];
+
+const isCreateSnapshot = ref(false);
+const onCreateBtnClick = () => {
+    modalSnapshotInfo.value = {
+        name: '',
+        description: '',
+        parent: ''
+    };
+    isEditorOpen.value = true;
+    isCreateSnapshot.value = true;
+    onEditorComfirm.value = async () => {
+        await $fetch('/api/create-snapshot', {
+            method: 'POST',
+            headers: {
+                        'Content-Type': 'application/json',
+            },
+            body: modalSnapshotInfo.value
+        });
+        await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
+        updateRender();
+    }
+}
+
+const isSchedModalOpen = ref(false);
+const onSchedBtnClick = () => {
+    isSchedModalOpen.value = true;
+}
 </script>
 
 <template>
@@ -335,6 +340,14 @@ const items = [
                 <div>
                     <UButton icon="i-heroicons-plus-16-solid" @click="onCreateBtnClick">
                         Create
+                    </UButton>
+                </div>
+                <div>
+                    <UButton 
+                        icon="i-heroicons-clock-16-solid"
+                        @click="onSchedBtnClick"
+                    >
+                        Auto Snapshot
                     </UButton>
                 </div>
             </div>
@@ -355,6 +368,7 @@ const items = [
             :on-confirm="onEditorComfirm" :is-create="isCreateSnapshot"
             :snapshot-list="snapshotData ? snapshotData[selected] : null" />
         <AlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertComfirm" />
+        <SnapshotScheduledJobModal v-model:is-open="isSchedModalOpen" :domain="selected" />
     </div>
 </template>
 

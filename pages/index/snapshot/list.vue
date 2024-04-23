@@ -29,6 +29,14 @@
                         Create
                     </UButton>
                 </div>
+                <div>
+                    <UButton 
+                        icon="i-heroicons-clock-16-solid"
+                        @click="onSchedBtnClick"
+                    >
+                        Auto Snapshot
+                    </UButton>
+                </div>
             </div>
             <UCard
                 :ui="{
@@ -73,6 +81,7 @@
             :msg="alertMsg"
             :on-confirm="onAlertComfirm"
         />
+        <SnapshotScheduledJobModal v-model:is-open="isSchedModalOpen" :domain="selected" />
     </div>
 </template>
 
@@ -149,29 +158,6 @@ const openAlert = (msg: string) => {
     alertMsg.value = msg;
     isAlertOpen.value = true;
 };
-
-const isCreateSnapshot = ref(false);
-const onCreateBtnClick = () => {
-    modalSnapshotInfo.value = {
-        name: '',
-        description: '',
-        parent: ''
-    };
-    isEditorOpen.value = true;
-    isCreateSnapshot.value = true;
-    onEditorComfirm.value = async () => {
-        isTableLoading.value = true;
-        await $fetch('/api/create-snapshot', {
-            method: 'POST',
-            headers: {
-                        'Content-Type': 'application/json',
-            },
-            body: modalSnapshotInfo.value
-        });
-        await refreshSnapshotData();
-        isTableLoading.value = false;
-    }
-}
 
 const items = (row: { name: string, description: string }) => [
     [
@@ -308,4 +294,38 @@ const tableData = computed(() => {
     }
     return data;
 });
+
+// Code for snapshot create 
+
+const isCreateSnapshot = ref(false);
+const onCreateBtnClick = () => {
+    modalSnapshotInfo.value = {
+        name: '',
+        description: '',
+        parent: ''
+    };
+    isEditorOpen.value = true;
+    isCreateSnapshot.value = true;
+    onEditorComfirm.value = async () => {
+        isTableLoading.value = true;
+        await $fetch('/api/create-snapshot', {
+            method: 'POST',
+            headers: {
+                        'Content-Type': 'application/json',
+            },
+            body: modalSnapshotInfo.value
+        });
+        await refreshSnapshotData();
+        isTableLoading.value = false;
+    }
+}
+
+// Code for auto snapshot
+
+const isSchedModalOpen = ref(false);
+
+const onSchedBtnClick = () => {
+    isSchedModalOpen.value = true;
+}
+
 </script>

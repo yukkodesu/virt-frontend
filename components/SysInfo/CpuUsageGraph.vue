@@ -41,6 +41,7 @@ const updateGraph = (sysinfo: SysInfo) => {
     Object.entries(usage).forEach(([k, v]: [string, unknown]) => {
         const i = Number(k);
         if (typeof v !== 'number') return;
+        console.log(v);
         seriesVal[i].data.push({ x: timestamp, y: v });
     });
     if (seriesVal[0]?.data?.length <= 15) return;
@@ -56,7 +57,6 @@ const chartOptions = ref({
     chart: {
         type: 'line',
         height: 350,
-        stacked: true,
         zoom: {
             enabled: false,
         },

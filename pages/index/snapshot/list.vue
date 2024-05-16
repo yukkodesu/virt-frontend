@@ -313,7 +313,12 @@ const onCreateBtnClick = () => {
             headers: {
                         'Content-Type': 'application/json',
             },
-            body: modalSnapshotInfo.value
+            body: { 
+                dom_name: selected.value,
+                snapshot_name: modalSnapshotInfo.value.name,
+                description: modalSnapshotInfo.value.description,
+                parent: modalSnapshotInfo.value.parent,
+            }
         });
         await refreshSnapshotData();
         isTableLoading.value = false;

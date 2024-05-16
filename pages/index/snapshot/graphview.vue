@@ -194,11 +194,11 @@ const modalSnapshotInfo = ref<{ name: string; description: string; parent?: stri
     name: '',
     description: '',
 });
-const onEditorComfirm = ref<(() => Promise<void>) | null>(null);
+const onEditorConfirm = ref<(() => Promise<void>) | null>(null);
 
 const isAlertOpen = ref(false);
 const alertMsg = ref('');
-const onAlertComfirm = ref<(() => Promise<void>) | null>(null);
+const onAlertConfirm = ref<(() => Promise<void>) | null>(null);
 const openAlert = (msg: string) => {
     alertMsg.value = msg;
     isAlertOpen.value = true;
@@ -214,7 +214,7 @@ const items = [
                 name: selectedNode.value ?? '',
                 description: snapshotInfo.value ? snapshotInfo.value.description : '',
             };
-            onEditorComfirm.value = async () => {
+            onEditorConfirm.value = async () => {
                 await $fetch('/api/v1/snapshot/edit', {
                     headers: {
                         'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ const items = [
                     },
                 });
                 await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
-                updateRender();
+                await updateRender();
             };
         },
     },
@@ -236,7 +236,7 @@ const items = [
         icon: 'i-heroicons-check-circle-20-solid',
         click: () => {
             openAlert('Revert to another snapshot will discard all your changes in VM now, Do you still continue ?');
-            onAlertComfirm.value = async () => {
+            onAlertConfirm.value = async () => {
                 await $fetch('/api/v1/snapshot/set-current', {
                     headers: {
                         'Content-Type': 'application/json',
@@ -247,8 +247,9 @@ const items = [
                         snapshot_name: selectedNode.value,
                     },
                 });
+                isAlertOpen.value = false;
                 await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
-                updateRender();
+                await updateRender();
             };
         },
     },
@@ -257,7 +258,7 @@ const items = [
         icon: 'i-heroicons-document-duplicate-20-solid',
         click: () => {
             openAlert('Clone this snapshot into new VM, Do you still continue ?');
-            onAlertComfirm.value = async () => {
+            onAlertConfirm.value = async () => {
                 isAlertOpen.value = false;
                 await $fetch('/api/v1/snapshot/clone-as-vm', {
                     headers: {
@@ -279,7 +280,7 @@ const items = [
         icon: 'i-heroicons-trash-20-solid',
         click: () => {
             openAlert('Delete snapshot will lose data on this snapshot. Do you still continue ?');
-            onAlertComfirm.value = async () => {
+            onAlertConfirm.value = async () => {
                 isAlertOpen.value = false;
 
                 await $fetch('/api/v1/snapshot/delete', {
@@ -308,13 +309,18 @@ const onCreateBtnClick = () => {
     };
     isEditorOpen.value = true;
     isCreateSnapshot.value = true;
-    onEditorComfirm.value = async () => {
+    onEditorConfirm.value = async () => {
         await $fetch('/api/v1/snapshot/create', {
             method: 'POST',
             headers: {
-                        'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
-            body: modalSnapshotInfo.value
+            body:  { 
+                dom_name: selected.value,
+                snapshot_name: modalSnapshotInfo.value.name,
+                description: modalSnapshotInfo.value.description,
+                parent: modalSnapshotInfo.value.parent,
+            }
         });
         await Promise.all([refreshSnapshotData(), refreshSnapshotTree()]);
         updateRender();
@@ -365,9 +371,9 @@ const onSchedBtnClick = () => {
         </div>
         <SnapshotEditor
             v-model:is-open="isEditorOpen" v-model:snapshot-info="modalSnapshotInfo"
-            :on-confirm="onEditorComfirm" :is-create="isCreateSnapshot"
+            :on-confirm="onEditorConfirm" :is-create="isCreateSnapshot"
             :snapshot-list="snapshotData ? snapshotData[selected] : null" />
-        <AlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertComfirm" />
+        <AlertDialog v-model:is-open="isAlertOpen" :msg="alertMsg" :on-confirm="onAlertConfirm" />
         <SnapshotScheduledJobModal v-model:is-open="isSchedModalOpen" :domain="selected" />
     </div>
 </template>

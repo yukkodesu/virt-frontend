@@ -143,7 +143,7 @@ const items = (row: {
                 click: () => {
                     openAlert("Do you want to delete your VM? This action will lose data in that VM.");
                     onAlertComfirm.value = async () => {
-                        await setDomState(row.name, "delete");
+                        await setDomState(row.name, "undefine");
                         isAlertOpen.value = false;
                     };
                 },

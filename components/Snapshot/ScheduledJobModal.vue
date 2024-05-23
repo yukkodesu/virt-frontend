@@ -9,6 +9,12 @@
                     <UFormGroup label="Cron Expression" name="cron">
                         <UInput v-model="state.cron" />
                     </UFormGroup>
+                    <UFormGroup label="Description" name="description">
+                        <UInput v-model="state.description" />
+                    </UFormGroup>
+                    <UFormGroup label="Naming Prefix" name="prefix">
+                        <UInput v-model="state.prefix" />
+                    </UFormGroup>
                     <UButton type="submit" class="self-end">
                         Submit
                     </UButton>
@@ -52,6 +58,8 @@ const schema = object({
 
 const state = ref({
     cron: "",
+    description: "",
+    prefix: "",
 })
 
 const isOpen = defineModel<boolean>('isOpen');
